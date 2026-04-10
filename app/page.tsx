@@ -5,6 +5,7 @@ import Footer from "@/sections/Footer";
 import FloatingActionBar from "@/components/common/FloatingActionBar";
 import Navbar from "@/sections/NavBar";
 import LegalSupportSection from "@/sections/LegalSupportSection";
+import NewsSection from "@/sections/NewsSection";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
       <HeroSection />
       <ReportedCasesSection />
       <LegalSupportSection />
+      <NewsSection />
       <CtaSection />
       <Footer />
       <FloatingActionBar />

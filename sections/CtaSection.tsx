@@ -5,7 +5,7 @@ import OpenCaseModalButton from "@/components/common/OpenCaseModalButton";
 
 export default function CtaSection() {
   return (
-    <section className="relative overflow-hidden bg-[var(--color-bg-base)] py-16 md:py-24">
+    <section className="relative overflow-hidden bg-base   py-16 md:py-24">
       {/* Accent glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(215,38,46,0.06),transparent_60%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent_50%)]" />

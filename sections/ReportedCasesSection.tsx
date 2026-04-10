@@ -43,7 +43,7 @@ function getInitials(name: string) {
 
 export default function ReportedCasesSection() {
   return (
-    <section className="relative overflow-hidden bg-[var(--color-bg-base)] py-14 md:py-20">
+    <section className="relative overflow-hidden bg-elevated py-14 md:py-20">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.04),transparent_40%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.02),transparent_35%)]" />
 
       <div className="relative mx-auto grid max-w-7xl gap-8 px-5 sm:px-6 lg:grid-cols-[1.6fr_1fr] lg:gap-10">
@@ -133,7 +133,9 @@ export default function ReportedCasesSection() {
                   className="flex w-full items-center justify-between gap-3 rounded-[var(--radius-md)] border border-white/8 bg-white/[0.03] px-4 py-3 text-left transition-all hover:border-white/15 hover:bg-white/[0.06] cursor-pointer"
                 >
                   <span className="flex items-center gap-2.5 text-sm font-medium text-[var(--color-text-primary)]">
-                    <span className="text-xs text-[var(--color-primary)]">★</span>
+                    <span className="text-xs text-[var(--color-primary)]">
+                      ★
+                    </span>
                     {item}
                   </span>
 
@@ -163,7 +165,9 @@ export default function ReportedCasesSection() {
                   key={story}
                   className="flex items-start gap-3 rounded-[var(--radius-md)] border border-white/8 bg-white/[0.03] px-4 py-3"
                 >
-                  <span className="mt-0.5 text-xs text-[var(--color-primary)]">★</span>
+                  <span className="mt-0.5 text-xs text-[var(--color-primary)]">
+                    ★
+                  </span>
                   <p className="text-sm font-medium leading-snug text-[var(--color-text-primary)]">
                     {story}
                   </p>

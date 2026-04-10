@@ -12,6 +12,8 @@
   --color-bg-surface: #1a1a1c;
   --color-bg-elevated: #222225;
   --color-bg-overlay: rgba(0, 0, 0, 0.65);
+  --color-bg-light: #f1f1f3;
+  --color-bg-dark: #1f1f23;
 
   /* TEXT */
   --color-text-primary: #ffffff;
@@ -72,14 +74,26 @@ html {
 .bg-overlay {
   background-color: var(--color-bg-overlay);
 }
+.bg-light {
+  background-color: var(--color-bg-light);
+}
+
+.bg-red {
+  background-color: var(--color-primary);
+}
 
 /* ── Text utilities ──────────────────────────── */
 .text-white-secondary {
   color: var(--color-text-secondary);
 }
-
+.text-dark {
+  color: var(--color-text-inverse);
+}
 .text-gray-light {
   color: var(--color-text-muted);
+}
+.text-red {
+  color: var(--color-primary);
 }
 
 /* ── Text shadow for hero readability ────────── */
@@ -107,4 +121,9 @@ html {
 /* ────────────────────────── */
 h1 {
   font-family: "Montserrat", sans-serif;
+}
+
+/* ── Border ──────────────────────────────── */
+.border-red {
+  border-color: var(--color-primary);
 }
