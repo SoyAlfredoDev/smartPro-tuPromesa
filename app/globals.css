@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+:root {
+  /* PRIMARY */
+  --color-primary: #d7262e;
+  --color-primary-hover: #b61f25;
+  --color-primary-active: #8e181c;
+  --color-primary-soft: #fdebec;
+
+  /* BACKGROUND */
+  --color-bg-base: #0f0f10;
+  --color-bg-surface: #1a1a1c;
+  --color-bg-elevated: #222225;
+  --color-bg-overlay: rgba(0, 0, 0, 0.65);
+
+  /* TEXT */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #c7c7c9;
+  --color-text-muted: #8a8a8f;
+  --color-text-inverse: #0f0f10;
+
+  /* BORDER */
+  --color-border-subtle: #2a2a2e;
+  --color-border-strong: #3a3a3f;
+
+  /* ACCENTS */
+  --color-success: #22c55e;
+  --color-warning: #ff4d4f;
+  --color-info: #3b82f6;
+
+  /* RADIUS */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* SHADOWS */
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.25);
+  --shadow-medium: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.6);
+  --shadow-primary-glow: 0 0 20px rgba(215, 38, 46, 0.35);
+}
+
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+/* BACKGROUND */
+.bg-base {
+  background-color: var(--color-bg-base);
+}
+
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.bg-surface {
+  background-color: var(--color-bg-surface);
+}
+
+.bg-elevated {
+  background-color: var(--color-bg-elevated);
+}
+
+.bg-overlay {
+  background-color: var(--color-bg-overlay);
+}
+
+/* TEXT */
+.text-white {
+  color: var(--color-text-primary);
+}
+
+.text-white-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-gray-light {
+  color: var(--color-text-muted);
+}
+
+.text-black {
+  color: var(--color-text-inverse);
+}
+
+/* RADIUS */
+.rounded-sm {
+  border-radius: var(--radius-sm);
+}
+
+.rounded-md {
+  border-radius: var(--radius-md);
+}
+
+.rounded-lg {
+  border-radius: var(--radius-lg);
+}
+
+.rounded-xl {
+  border-radius: var(--radius-xl);
+}
