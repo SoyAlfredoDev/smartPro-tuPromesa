@@ -49,7 +49,7 @@ export default function ModalButton({ isOpen, onClose, children }: ModalProps) {
           />
 
           {/* Modal */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 py-6 mt-20">
             <motion.div
               initial={{ opacity: 0, y: 30, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -66,7 +66,7 @@ export default function ModalButton({ isOpen, onClose, children }: ModalProps) {
                 <IoClose size={18} />
               </button>
 
-              <div className="p-5 md:p-6">{children}</div>
+              <div className="p-5 md:p-6 mt-10">{children}</div>
             </motion.div>
           </div>
         </>

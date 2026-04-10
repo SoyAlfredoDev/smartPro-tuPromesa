@@ -26,7 +26,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="text-shadow-hero text-2xl sm:text-3xl md:text-5xl lg:text-[3.25rem] font-extrabold text-white leading-tight tracking-tight"
+          className="text-shadow-hero text-[3.2rem] md:text-5xl lg:text-[3.25rem] font-extrabold text-white leading-[1.1] tracking-tight"
         >
           ¿Tu promesa inmobiliaria no se cumplió?
         </motion.h1>
@@ -38,7 +38,8 @@ export default function HeroSection() {
           transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
           className="text-shadow-sm text-sm sm:text-base md:text-lg text-white/80 max-w-2xl leading-relaxed"
         >
-          Retrasos, cambios de condiciones, incumplimientos… <br className="hidden sm:block" />
+          Retrasos, cambios de condiciones, incumplimientos…{" "}
+          <br className="hidden sm:block" />
           Aquí puedes visibilizar tu caso.
         </motion.p>
 

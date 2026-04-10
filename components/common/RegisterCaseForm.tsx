@@ -138,7 +138,7 @@ export default function RegisterCaseForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full space-y-6 p-1"
+      className="relative z-10 w-full space-y-6 p-1 z-[100]"
     >
       <div>
         <h2 className="text-2xl font-extrabold text-[var(--color-text-primary)]">

@@ -44,6 +44,7 @@
 /* ── Base resets ──────────────────────────────── */
 html {
   scroll-behavior: smooth;
+  font-family: "Montserrat", sans-serif;
 }
 
 ::selection {
@@ -83,7 +84,9 @@ html {
 
 /* ── Text shadow for hero readability ────────── */
 .text-shadow-hero {
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.4);
+  text-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.6),
+    0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .text-shadow-sm {
@@ -99,4 +102,9 @@ html {
 
 .focus-ring:focus-visible {
   outline-color: var(--color-primary);
+}
+
+/* ────────────────────────── */
+h1 {
+  font-family: "Montserrat", sans-serif;
 }

@@ -79,8 +79,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-10 border-t border-white/8 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[var(--color-text-muted)]">
           <span>
-            Estudio Jurídico Vidal y López Limitada, RUT 77.938.388-5 / ©{" "}
-            {new Date().getFullYear()} Todos los derechos reservados
+            © {new Date().getFullYear()} Todos los derechos reservados
           </span>
           <div className="flex items-center gap-2">
             <span>creado por:</span>
