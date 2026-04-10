@@ -6,11 +6,11 @@ export function proxy(req: NextRequest) {
 
   if (!isAdminRoute) return NextResponse.next();
 
-  const isLogin = req.nextUrl.pathname === "/admin/login";
+  const isLogin = req.nextUrl.pathname === "/login";
   const auth = req.cookies.get("admin_auth");
 
   if (!auth && !isLogin) {
-    return NextResponse.redirect(new URL("/admin/login", req.url));
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   return NextResponse.next();
