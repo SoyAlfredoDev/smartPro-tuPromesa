@@ -7,11 +7,13 @@ import RegisterCaseForm from "@/components/common/RegisterCaseForm";
 type Props = {
   label?: string;
   variant?: "primary" | "secondary";
+  styless?: string;
 };
 
 export default function OpenCaseModalButton({
   label = "Denunciar mi caso",
   variant = "primary",
+  styless = "",
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -24,8 +26,8 @@ export default function OpenCaseModalButton({
         ${
           variant === "primary"
             ? "bg-[linear-gradient(135deg,var(--color-primary),var(--color-primary-active))] text-white shadow-[var(--shadow-primary-glow)] hover:brightness-110"
-            : "border border-[var(--color-border-strong)] text-white hover:bg-[var(--color-bg-surface)]"
-        }`}
+            : "border border-[var(--color-border-strong)] text-white hover:bg-[var(--color-bg-surface)] "
+        } ${styless}`}
       >
         {label}
       </button>

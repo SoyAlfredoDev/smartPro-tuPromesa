@@ -106,7 +106,10 @@ export default function Navbar() {
             </nav>
 
             <div className="hidden lg:block">
-              <OpenCaseModalButton label="Denunciar mi caso" />
+              <OpenCaseModalButton
+                label="Denunciar mi caso"
+                styless="text-xs"
+              />
             </div>
 
             <button
@@ -177,7 +180,10 @@ export default function Navbar() {
               </div>
 
               <div className="mt-auto pt-6">
-                <OpenCaseModalButton label="Denunciar mi caso" />
+                <OpenCaseModalButton
+                  label="Denunciar mi caso"
+                  styless="w-full"
+                />
               </div>
             </motion.aside>
           </>

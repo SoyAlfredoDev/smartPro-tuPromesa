@@ -11,9 +11,14 @@ export default function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
+          src="/images/bg-hero-sm.png"
+          alt=""
+          className="w-full h-full object-cover lg:hidden"
+        />
+        <img
           src="/images/bg-hero.png"
           alt=""
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover hidden lg:block"
         />
         {/* Stronger overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/55 to-black/70" />
