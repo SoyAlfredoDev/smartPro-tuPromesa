@@ -6,18 +6,17 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-white/10 bg-[var(--color-bg-base)]">
-      {/* subtle background */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(255,255,255,0.04),transparent_60%)]" />
+    <footer className="relative overflow-hidden border-t border-white/8 bg-[var(--color-bg-base)]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(255,255,255,0.03),transparent_60%)]" />
 
-      <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 md:py-12">
-        <div className="grid gap-8 md:grid-cols-3">
+      <div className="relative mx-auto max-w-7xl px-5 sm:px-6 py-12 md:py-14">
+        <div className="grid gap-10 md:grid-cols-3">
           {/* Brand */}
           <motion.div
-            initial={{ opacity: 0, y: 14 }}
+            initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 0.35 }}
           >
             <h3 className="text-xl font-extrabold text-[var(--color-text-primary)]">
               TuPromesa<span className="text-[var(--color-primary)]">.cl</span>
@@ -31,51 +30,41 @@ export default function Footer() {
 
           {/* Links */}
           <motion.div
-            initial={{ opacity: 0, y: 14 }}
+            initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.05 }}
+            transition={{ duration: 0.35, delay: 0.04 }}
             className="flex flex-col gap-3"
           >
-            <h4 className="text-sm font-semibold uppercase tracking-wide text-[var(--color-text-primary)]">
+            <h4 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)]">
               Navegación
             </h4>
 
-            <Link
-              href="#"
-              className="text-sm text-[var(--color-text-secondary)] hover:text-white transition"
-            >
-              Denunciar mi caso
-            </Link>
-            <Link
-              href="#"
-              className="text-sm text-[var(--color-text-secondary)] hover:text-white transition"
-            >
-              Ver denuncias
-            </Link>
-            <Link
-              href="#"
-              className="text-sm text-[var(--color-text-secondary)] hover:text-white transition"
-            >
-              FAQ
-            </Link>
-            <Link
-              href="#"
-              className="text-sm text-[var(--color-text-secondary)] hover:text-white transition"
-            >
-              Contacto
-            </Link>
+            {[
+              { label: "Denunciar mi caso", href: "#" },
+              { label: "Ver denuncias", href: "#" },
+              { label: "FAQ", href: "#" },
+              { label: "Contacto", href: "#" },
+            ].map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="text-sm text-[var(--color-text-secondary)] hover:text-white transition-colors duration-200"
+              >
+                {link.label}
+              </Link>
+            ))}
           </motion.div>
 
           {/* Legal */}
           <motion.div
-            initial={{ opacity: 0, y: 14 }}
+            initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.1 }}
+            transition={{ duration: 0.35, delay: 0.08 }}
             className="flex flex-col gap-3"
           >
-            <h4 className="text-sm font-semibold uppercase tracking-wide text-[var(--color-text-primary)]">
+            <h4 className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)]">
               Legal
             </h4>
 
@@ -87,26 +76,26 @@ export default function Footer() {
           </motion.div>
         </div>
 
-        {/* Bottom */}
-        <div className="relative mt-8 border-t border-white/10 pt-6 text-center max-w-7xl mx-auto px-6 md:px-10 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-[#a8a29e]">
+        {/* Bottom bar */}
+        <div className="mt-10 border-t border-white/8 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[var(--color-text-muted)]">
           <span>
             Estudio Jurídico Vidal y López Limitada, RUT 77.938.388-5 / ©{" "}
             {new Date().getFullYear()} Todos los derechos reservados
           </span>
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center gap-2">
             <span>creado por:</span>
             <a
               href="https://smartpro.cl"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center hover:scale-105 transition-transform duration-300"
+              className="flex items-center hover:scale-105 transition-transform duration-200"
             >
               <Image
                 src="/images/logo-smartpro.png"
                 alt="SmartPro — Desarrollo web profesional"
                 width={80}
                 height={30}
-                className="w-auto object-contain bg-white rounded-lg py-2 px-4"
+                className="w-auto object-contain bg-white rounded-[var(--radius-sm)] py-1.5 px-3"
               />
             </a>
           </div>

@@ -7,11 +7,7 @@ import {
   IoChevronUpOutline,
   IoChevronDownOutline,
 } from "react-icons/io5";
-import { FaWhatsapp } from "react-icons/fa";
-import { FaFacebook } from "react-icons/fa";
-import { FaInstagram } from "react-icons/fa";
-import OpenCaseModalButton from "@/components/common/OpenCaseModalButton";
-import { IconType } from "react-icons";
+import { FaWhatsapp, FaFacebook, FaInstagram } from "react-icons/fa";
 
 /**
  * CONFIGURACIÓN CENTRALIZADA
@@ -48,7 +44,7 @@ export default function FloatingActionBar() {
     <>
       {/* DESKTOP */}
       <div className="fixed right-5 top-1/2 z-50 hidden -translate-y-1/2 lg:block">
-        <div className="rounded-md border border-white/10 bg-[var(--color-bg-surface)]/80 p-2 backdrop-blur-xl shadow-[var(--shadow-medium)]">
+        <div className="rounded-[var(--radius-md)] border border-white/10 bg-[var(--color-bg-surface)]/80 p-2 backdrop-blur-xl shadow-[var(--shadow-medium)]">
           <div className="flex flex-col gap-2">
             {floatingActions.map((action) => {
               const Icon = action.icon;
@@ -60,9 +56,9 @@ export default function FloatingActionBar() {
                   rel="noopener noreferrer"
                   whileHover={{ x: -4, scale: 1.05 }}
                   whileTap={{ scale: 0.96 }}
-                  className={`flex h-11 w-11 items-center justify-center rounded-sm border
+                  className={`flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border transition-all duration-200
                      ${action.color === "green" ? "border-green-500/30 bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white" : ""} 
-                     ${action.color === "white" ? "border-white/50 bg-white/50 text-black hover:bg-white hover:text-black" : ""} `}
+                     ${action.color === "white" ? "border-white/20 bg-white/10 text-white hover:bg-white/20" : ""} `}
                 >
                   <Icon size={18} />
                 </motion.a>
@@ -119,7 +115,9 @@ export default function FloatingActionBar() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.05 * index }}
-                      className="flex h-11 w-11 items-center justify-center rounded-xl border border-green-500/30 bg-green-500/10 text-green-400"
+                      className={`flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border transition-all duration-200
+                     ${action.color === "green" ? "border-green-500/30 bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white" : ""} 
+                     ${action.color === "white" ? "border-white/20 bg-white/10 text-white hover:bg-white/20" : ""} `}
                     >
                       <Icon size={18} />
                     </motion.a>

@@ -2,6 +2,7 @@
 
 import { ReactNode, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { IoClose } from "react-icons/io5";
 
 type ModalProps = {
   isOpen: boolean;
@@ -10,7 +11,7 @@ type ModalProps = {
 };
 
 export default function ModalButton({ isOpen, onClose, children }: ModalProps) {
-  // bloquear scroll
+  // block scroll
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -23,6 +24,16 @@ export default function ModalButton({ isOpen, onClose, children }: ModalProps) {
     };
   }, [isOpen]);
 
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [isOpen, onClose]);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -32,6 +43,7 @@ export default function ModalButton({ isOpen, onClose, children }: ModalProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={onClose}
             className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
           />
@@ -39,21 +51,22 @@ export default function ModalButton({ isOpen, onClose, children }: ModalProps) {
           {/* Modal */}
           <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
             <motion.div
-              initial={{ opacity: 0, y: 40, scale: 0.96 }}
+              initial={{ opacity: 0, y: 30, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 30, scale: 0.96 }}
-              transition={{ duration: 0.3 }}
+              exit={{ opacity: 0, y: 20, scale: 0.97 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
               className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[var(--radius-lg)] border border-white/10 bg-[var(--color-bg-surface)] shadow-[var(--shadow-strong)]"
             >
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="absolute right-4 top-4 text-white/60 hover:text-white transition"
+                className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10 transition-all duration-200 cursor-pointer"
+                aria-label="Cerrar"
               >
-                ✕
+                <IoClose size={18} />
               </button>
 
-              <div className="p-4 md:p-6">{children}</div>
+              <div className="p-5 md:p-6">{children}</div>
             </motion.div>
           </div>
         </>

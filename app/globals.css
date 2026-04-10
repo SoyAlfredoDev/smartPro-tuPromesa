@@ -41,11 +41,17 @@
   --shadow-primary-glow: 0 0 20px rgba(215, 38, 46, 0.35);
 }
 
-.bg-primary {
-  background-color: var(--color-primary);
+/* ── Base resets ──────────────────────────────── */
+html {
+  scroll-behavior: smooth;
 }
 
-/* BACKGROUND */
+::selection {
+  background-color: rgba(215, 38, 46, 0.3);
+  color: #fff;
+}
+
+/* ── Background utilities ────────────────────── */
 .bg-base {
   background-color: var(--color-bg-base);
 }
@@ -66,11 +72,7 @@
   background-color: var(--color-bg-overlay);
 }
 
-/* TEXT */
-.text-white {
-  color: var(--color-text-primary);
-}
-
+/* ── Text utilities ──────────────────────────── */
 .text-white-secondary {
   color: var(--color-text-secondary);
 }
@@ -79,23 +81,22 @@
   color: var(--color-text-muted);
 }
 
-.text-black {
-  color: var(--color-text-inverse);
+/* ── Text shadow for hero readability ────────── */
+.text-shadow-hero {
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
-/* RADIUS */
-.rounded-sm {
-  border-radius: var(--radius-sm);
+.text-shadow-sm {
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
 }
 
-.rounded-md {
-  border-radius: var(--radius-md);
+/* ── Focus ring ──────────────────────────────── */
+.focus-ring {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: outline-color 0.15s ease;
 }
 
-.rounded-lg {
-  border-radius: var(--radius-lg);
-}
-
-.rounded-xl {
-  border-radius: var(--radius-xl);
+.focus-ring:focus-visible {
+  outline-color: var(--color-primary);
 }
