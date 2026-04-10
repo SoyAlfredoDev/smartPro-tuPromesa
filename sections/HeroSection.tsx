@@ -2,6 +2,7 @@
 
 import ImpactStatsSection from "@/sections/ImpactStatusSection";
 import OpenCaseModalButton from "@/components/common/OpenCaseModalButton";
+import Image from "next/image";
 
 import { motion } from "framer-motion";
 
@@ -10,15 +11,21 @@ export default function HeroSection() {
     <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
-        <img
+        <Image
           src="/images/bg-hero-sm.png"
-          alt=""
-          className="w-full h-full object-cover lg:hidden"
+          alt="Vista aérea de construcción"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover lg:hidden"
         />
-        <img
+        <Image
           src="/images/bg-hero.png"
-          alt=""
-          className="w-full h-full object-cover hidden lg:block"
+          alt="Vista aérea de construcción"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover hidden lg:block"
         />
         {/* Stronger overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/55 to-black/70" />

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 const newsItems = [
@@ -106,10 +107,12 @@ export default function NewsSection() {
             >
               <a href={item.href} className="block h-full" target="_blank">
                 <div className="relative aspect-[16/10] overflow-hidden">
-                  <img
+                  <Image
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                     src={item.image}
                     alt={item.title}
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+                    className="object-cover transition duration-500 group-hover:scale-[1.04]"
                   />
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08),rgba(0,0,0,0.35))]" />
 
@@ -157,10 +160,12 @@ export default function NewsSection() {
               >
                 <a href={item.href} className="block">
                   <div className="relative aspect-[16/10] overflow-hidden">
-                    <img
+                    <Image
+                      fill
+                      sizes="86vw"
                       src={item.image}
                       alt={item.title}
-                      className="h-full w-full object-cover"
+                      className="object-cover"
                     />
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08),rgba(0,0,0,0.38))]" />
 
