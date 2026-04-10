@@ -6,7 +6,7 @@ const options: MongoClientOptions = {
   maxIdleTimeMS: 5000,
 };
 
-const uri = process.env.MONGODB_URI;
+const uri = process.env.DB_MONGODB_URI;
 
 if (!uri) {
   throw new Error("Please add your Mongo URI to .env.local");
