@@ -85,13 +85,6 @@ export default function NewsSection() {
               que afectan a quienes compran en proyectos inmobiliarios.
             </p>
           </div>
-
-          <a
-            href="#"
-            className="inline-flex h-fit items-center justify-center rounded-[var(--radius-md)] border border-white/10 px-5 py-3 text-sm font-bold text-[var(--color-text-primary)] transition hover:bg-white/5"
-          >
-            Ver todas las noticias
-          </a>
         </motion.div>
 
         {/* Desktop / Tablet grid */}
@@ -136,10 +129,10 @@ export default function NewsSection() {
                     {item.excerpt}
                   </p>
 
-                  <a className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-red hover:scale-105 cursor-pointer">
+                  <div className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-red hover:scale-105 cursor-pointer">
                     Leer más
                     <span aria-hidden="true">→</span>
-                  </a>
+                  </div>
                 </div>
               </a>
             </motion.article>
@@ -158,7 +151,7 @@ export default function NewsSection() {
                 transition={{ duration: 0.35, delay: index * 0.05 }}
                 className="w-[86%] min-w-[86%] snap-center overflow-hidden rounded-[var(--radius-xl)] border border-white/10 bg-[var(--color-bg-surface)] shadow-[var(--shadow-medium)]"
               >
-                <a href={item.href} className="block">
+                <a href={item.href} className="block" target="_blank">
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <Image
                       fill
