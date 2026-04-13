@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import OpenCaseModalButton from "@/components/common/OpenCaseModalButton";
 
@@ -18,14 +19,6 @@ const companies = [
   "AP3",
 ];
 
-const pollOptions = [
-  "Inmobiliaria X",
-  "Construcciones Z",
-  "Edifica ABC",
-  "Proyectos Omega",
-  "Otra: ¿Por qué?",
-];
-
 const stories = [
   "Firmé y nunca respetaron el precio",
   "Me cambiaron la fecha 3 veces",
@@ -42,6 +35,23 @@ function getInitials(name: string) {
 }
 
 export default function ReportedCasesSection() {
+  const [pollOptions, setPollOptions] = useState([]);
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch("https://www.tu-promesa.cl/api/inmobiliarias", {
+          cache: "no-store",
+        });
+        const data = await res.json();
+
+        console.log("data: ----->", data);
+      } catch (error) {
+        console.error("Error cargando inmobiliarias", error);
+      }
+    }
+
+    load();
+  }, []);
   return (
     <section className="relative overflow-hidden bg-elevated py-14 md:py-20">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.04),transparent_40%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.02),transparent_35%)]" />
