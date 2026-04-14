@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 const reasons = [
   "Mal servicios post venta",
@@ -59,10 +60,12 @@ export default function VoteButton({
               >
                 {/* Header con inmobiliaria */}
                 <div className="flex items-center gap-4 border-b border-default bg-background px-6 py-4">
-                  <img
+                  <Image
                     src={inmobiliariaLogo}
                     alt={inmobiliariaName}
-                    className="h-12 w-60 rounded-sm object-cover border border-default"
+                    width={100}
+                    height={100}
+                    className=" w-60 rounded-sm object-cover border border-lg rounded-lg"
                   />
                   <div>
                     <h3 className="text-base font-semibold text-red">
@@ -162,7 +165,7 @@ export default function VoteButton({
                     </label>
 
                     {/* Actions */}
-                    <div className="flex justify-end gap-3 pt-2">
+                    <div className="flex justify-center gap-3 pt-2">
                       <button
                         type="button"
                         onClick={() => setOpen(false)}
