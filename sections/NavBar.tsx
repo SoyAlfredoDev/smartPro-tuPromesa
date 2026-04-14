@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiOutlineMenuAlt3, HiOutlineX } from "react-icons/hi";
 import OpenCaseModalButton from "@/components/common/OpenCaseModalButton";
+import Image from "next/image";
 
 const navLinks = [
   { label: "Inicio", href: "#hero" },
@@ -87,10 +88,13 @@ export default function Navbar() {
               className="flex items-center gap-2"
               aria-label="Ir al inicio"
             >
-              <span className="text-lg font-extrabold tracking-tight text-[var(--color-text-primary)] sm:text-xl">
-                TuPromesa
-                <span className="text-[var(--color-primary)]">.cl</span>
-              </span>
+              <Image
+                src="/images/logo-tuPromesaCl.png"
+                alt="Logo"
+                width={100}
+                height={100}
+                className="w-36 bg-white rounded-sm p-2"
+              />
             </Link>
 
             <nav className="hidden items-center gap-7 lg:flex">

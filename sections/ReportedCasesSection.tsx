@@ -3,21 +3,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import OpenCaseModalButton from "@/components/common/OpenCaseModalButton";
-
-const companies = [
-  "Grupo XYZ",
-  "InmoChile",
-  "EDIFICA",
-  "Acerra",
-  "Inmohogar",
-  "Omega",
-  "ciu2AD+",
-  "UrbanReal",
-  "ALIANZA",
-  "NEX",
-  "Desarrollos ABC",
-  "AP3",
-];
+import Image from "next/image";
+import VoteButton from "@/components/VoteButton";
 
 const stories = [
   "Firmé y nunca respetaron el precio",
@@ -34,17 +21,26 @@ function getInitials(name: string) {
     .slice(0, 2);
 }
 
+interface Inmobiliaria {
+  _id: string;
+  name: string;
+  logoUrl: string;
+}
+
 export default function ReportedCasesSection() {
-  const [pollOptions, setPollOptions] = useState([]);
+  const [pollOptions, setPollOptions] = useState<Inmobiliaria[]>([]);
+  const [companies, setCompanies] = useState<string[]>([]);
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch("https://www.tu-promesa.cl/api/inmobiliarias", {
+        const res = await fetch("/api/inmobiliarias", {
           cache: "no-store",
         });
         const data = await res.json();
 
-        console.log("data: ----->", data);
+        console.log("data: ----->", data[0]);
+        setPollOptions(data);
+        setCompanies(data.map((item: Inmobiliaria) => item.logoUrl));
       } catch (error) {
         console.error("Error cargando inmobiliarias", error);
       }
@@ -79,15 +75,16 @@ export default function ReportedCasesSection() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.25, delay: index * 0.02 }}
-                  className="group flex items-center gap-3 rounded-[var(--radius-md)] border border-white/6 bg-white/[0.03] px-3 py-3.5 transition-colors hover:border-white/12 hover:bg-white/[0.06]"
+                  className="group flex items-center gap-3 rounded-[var(--radius-md)] border border-white/6 bg-white/[0.03] transition-colors hover:border-white/12 hover:bg-white/[0.06]"
                 >
                   {/* Monogram */}
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--color-primary)]/10 text-xs font-bold text-[var(--color-primary)] ring-1 ring-[var(--color-primary)]/20">
-                    {getInitials(company)}
-                  </span>
-                  <span className="text-xs font-semibold leading-tight text-[var(--color-text-primary)] sm:text-sm">
-                    {company}
-                  </span>
+                  <Image
+                    src={company}
+                    alt="Company"
+                    width={96}
+                    height={96}
+                    className="w-full shrink-0 rounded-[var(--radius-sm)]"
+                  />
                 </motion.div>
               ))}
             </div>
@@ -138,21 +135,29 @@ export default function ReportedCasesSection() {
 
             <div className="mt-5 space-y-2.5">
               {pollOptions.map((item) => (
-                <button
-                  key={item}
-                  className="flex w-full items-center justify-between gap-3 rounded-[var(--radius-md)] border border-white/8 bg-white/[0.03] px-4 py-3 text-left transition-all hover:border-white/15 hover:bg-white/[0.06] cursor-pointer"
+                <div
+                  key={item._id}
+                  className="flex w-full items-center justify-between gap-3 rounded-lg border border-white/8 bg-white/[0.03] px-4 py-3 text-left transition-all hover:border-white/15 hover:bg-white/[0.06] cursor-pointer"
                 >
                   <span className="flex items-center gap-2.5 text-sm font-medium text-[var(--color-text-primary)]">
-                    <span className="text-xs text-[var(--color-primary)]">
-                      ★
-                    </span>
-                    {item}
+                    <Image
+                      src={item.logoUrl}
+                      alt={item.name}
+                      width={96}
+                      height={96}
+                      className="shrink-0 rounded-sm"
+                    />
+                    {item.name}
                   </span>
 
-                  <span className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 px-3 py-1.5 text-xs font-bold text-[var(--color-primary)] transition hover:bg-[var(--color-primary)] hover:text-white">
-                    👥 Votar
+                  <span className="">
+                    <VoteButton
+                      inmobiliariaId={item._id}
+                      inmobiliariaName={item.name}
+                      inmobiliariaLogo={item.logoUrl}
+                    />
                   </span>
-                </button>
+                </div>
               ))}
             </div>
           </div>
@@ -188,15 +193,6 @@ export default function ReportedCasesSection() {
             <div className="mt-6">
               <OpenCaseModalButton label="Sumar mi caso" variant="primary" />
             </div>
-          </div>
-
-          {/* Secondary image */}
-          <div className="overflow-hidden rounded-[var(--radius-lg)] border border-white/8 shadow-[var(--shadow-medium)]">
-            <img
-              src="/images/reported-cases-secondary.jpg"
-              alt="Personas afectadas conversando sobre un problema inmobiliario"
-              className="h-[200px] w-full object-cover sm:h-[260px] lg:h-[280px]"
-            />
           </div>
         </motion.aside>
       </div>
