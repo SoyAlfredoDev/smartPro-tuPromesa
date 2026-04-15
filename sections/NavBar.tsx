@@ -89,11 +89,11 @@ export default function Navbar() {
               aria-label="Ir al inicio"
             >
               <Image
-                src="/images/logo-tuPromesaCl.png"
+                src="/images/logo-tu-promesa-cl.png"
                 alt="Logo"
                 width={100}
                 height={100}
-                className="w-36 bg-white rounded-sm p-2"
+                className="w-48 bg-black rounded-md py-1 px-2 shadow-lg "
               />
             </Link>
 

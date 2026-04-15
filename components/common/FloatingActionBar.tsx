@@ -8,6 +8,7 @@ import {
   IoChevronDownOutline,
 } from "react-icons/io5";
 import { FaWhatsapp, FaFacebook, FaInstagram } from "react-icons/fa";
+import { siteConfig } from "@/site";
 
 /**
  * CONFIGURACIÓN CENTRALIZADA
@@ -17,21 +18,21 @@ const floatingActions = [
   {
     id: "instagram",
     type: "link",
-    href: "https://www.instagram.com/groups/1000000000000000/",
+    href: siteConfig.social.instagram,
     icon: FaInstagram,
     color: "white",
   },
   {
     id: "facebook",
     type: "link",
-    href: "https://www.facebook.com/groups/1000000000000000/",
+    href: siteConfig.social.facebook,
     icon: FaFacebook,
     color: "white",
   },
   {
     id: "whatsapp",
     type: "link",
-    href: "https://wa.me/56900000000", // 🔁 cambiar aquí
+    href: siteConfig.contact.whatsappLink,
     icon: FaWhatsapp,
     color: "green",
   },
