@@ -44,7 +44,7 @@ export default function FloatingActionBar() {
   return (
     <>
       {/* DESKTOP */}
-      <div className="fixed right-5 top-1/2 z-50 hidden -translate-y-1/2 lg:block">
+      <div className="fixed right-5 top-1/2 z-40 hidden -translate-y-1/2 lg:block">
         <div className="rounded-[var(--radius-md)] border border-white/10 bg-[var(--color-bg-surface)]/80 p-2 backdrop-blur-xl shadow-[var(--shadow-medium)]">
           <div className="flex flex-col gap-2">
             {floatingActions.map((action) => {
