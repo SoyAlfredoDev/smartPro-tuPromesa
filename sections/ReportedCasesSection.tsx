@@ -48,7 +48,7 @@ const cases = [
   {
     inmobiliariaName: "Inmobiliaria Manquehue",
     votes: 10,
-    inmobiliariaId: "valle-central-003",
+    inmobiliariaId: "valle-central-0030",
     inmobiliariaLogo: "/inmobiliarias/inmobiliaria-manquehue.png",
     userName: "Felipe Arancibia",
     comment:
@@ -59,7 +59,7 @@ const cases = [
   {
     inmobiliariaName: "Inmobiliaria Manquehue",
     votes: 5,
-    inmobiliariaId: "valle-central-003",
+    inmobiliariaId: "valle-central-00300",
     inmobiliariaLogo: "/inmobiliarias/inmobiliaria-manquehue.png",
     userName: "Felipe Arancibia",
     comment:

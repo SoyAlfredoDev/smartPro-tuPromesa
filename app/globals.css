@@ -82,6 +82,9 @@ html {
   background-color: var(--color-primary);
 }
 
+.bg-red-hover {
+  background-color: var(--color-primary-hover);
+}
 /* ── Text utilities ──────────────────────────── */
 .text-white-secondary {
   color: var(--color-text-secondary);
@@ -130,6 +133,15 @@ h1 {
 .border-red {
   border-color: var(--color-primary);
 }
+
+.border-gold {
+  border-color: #c9a961;
+}
+
+.bg-gold {
+  background-color: #c9a961;
+}
+
 @keyframes scroll {
   0% {
     transform: translateX(0);

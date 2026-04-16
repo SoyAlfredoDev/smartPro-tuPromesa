@@ -49,24 +49,24 @@ export default function ModalButton({ isOpen, onClose, children }: ModalProps) {
           />
 
           {/* Modal */}
-          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 py-6 mt-20">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 py-10 mt-20">
             <motion.div
               initial={{ opacity: 0, y: 30, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.97 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[var(--radius-lg)] border border-white/10 bg-[var(--color-bg-surface)] shadow-[var(--shadow-strong)]"
+              className="relative w-full max-w-3xl bg-white max-h-[90vh] overflow-y-auto rounded-lg border border-white/10 bg-[var(--color-bg-surface)] shadow-[var(--shadow-strong)] py-4"
             >
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10 transition-all duration-200 cursor-pointer"
+                className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/5 border border-white/10 text-dark/60 hover:text-white hover:bg-white/10 transition-all duration-200 cursor-pointer"
                 aria-label="Cerrar"
               >
                 <IoClose size={18} />
               </button>
-
-              <div className="p-5 md:p-6 mt-10">{children}</div>
+              {/* Modal Content */}
+              {children}
             </motion.div>
           </div>
         </>

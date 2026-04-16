@@ -23,7 +23,7 @@ export default function LegalSupportSection() {
           transition={{ duration: 0.45 }}
           className="space-y-6"
         >
-          <div className="inline-flex rounded-full border border-[var(--color-primary)]/25 bg-[var(--color-primary)]/10 px-4 py-1.5 text-sm font-semibold text-[var(--color-primary)]">
+          <div className="inline-flex rounded-full border border-gold bg-gold/10 px-4 py-1.5 text-sm font-semibold text-gold">
             Respaldo jurídico
           </div>
 
@@ -57,7 +57,7 @@ export default function LegalSupportSection() {
                 className="rounded-[var(--radius-lg)] border border-white/10 bg-[var(--color-bg-surface)]/75 p-4 shadow-[var(--shadow-soft)] backdrop-blur-sm"
               >
                 <div className="flex items-start gap-3">
-                  <span className="mt-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)]/15 text-sm font-bold text-[var(--color-primary)]">
+                  <span className="mt-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold/15 text-sm font-bold text-gold">
                     ✓
                   </span>
                   <p className="text-sm font-medium leading-relaxed text-[var(--color-text-primary)] sm:text-base">
@@ -71,8 +71,9 @@ export default function LegalSupportSection() {
           <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
             <OpenCaseModalButton label="Solicitar evaluación de mi caso" />
             <a
-              href="#footer"
-              className="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-white/10 px-6 py-3 text-sm font-bold text-[var(--color-text-primary)] transition hover:bg-white/5"
+              href="https://www.estudiolyv.cl/#Contacto"
+              target="_blank"
+              className="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-gold px-6 py-3 text-sm font-bold text-[var(--color-text-primary)] transition hover:bg-white/5"
             >
               Conocer más del respaldo legal
             </a>

@@ -29,17 +29,17 @@ export default function FeaturedCase({
       initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-default bg-light shadow-[0_6px_18px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] md:flex-row"
+      className="group flex flex-col overflow-hidden rounded-md border border-default bg-light shadow-[0_6px_18px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] md:flex-row"
     >
       {/* Contenido */}
       <div className="flex w-full flex-col justify-between py-2 px-4">
         {/* Top */}
         <div>
           {/* Nombre + fecha */}
-          <div className="flex flex-col g sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-row items-center justify-between">
             <div>
               <h3 className="text-sm  md:text-lg font-semibold text-red pb-0 mb-0">
-                {inmobiliariaName} <span className="text-red">{votes}</span>
+                {inmobiliariaName}
               </h3>
               <span className="text-[11px]">{date}</span>
               <p className="text-xs">
