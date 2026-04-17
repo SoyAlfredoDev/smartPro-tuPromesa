@@ -1,7 +1,15 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useState } from "react";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
+// ─── Types ──────────────────────────────────────────────────────────────────
 
 type CaseFormData = {
   firstName: string;
@@ -9,7 +17,7 @@ type CaseFormData = {
   rut: string;
   email: string;
   phone: string;
-  companyName: string;
+  inmobiliariaId: string;
   incidentDate: string;
   claimedAmount: string;
   issueDescription: string;
@@ -17,11 +25,36 @@ type CaseFormData = {
   priorCommunication: string;
   claimObjective: string;
   acceptTerms: boolean;
+  declaracionVeracidad: boolean;
+};
+
+type Inmobiliaria = {
+  _id: string;
+  name: string;
+  rut?: string;
+  direccion?: string;
+  contacto?: string;
+};
+
+type NewInmobiliariaData = {
+  rut: string;
+  name: string;
+  direccion: string;
+  contacto: string;
 };
 
 type RegisterCaseFormProps = {
   onSubmitSuccess?: (data: CaseFormData) => void;
 };
+
+// ─── Constants ──────────────────────────────────────────────────────────────
+
+const STEP_LABELS = [
+  "Datos personales",
+  "Inmobiliaria",
+  "Detalle del reclamo",
+  "Confirmación",
+];
 
 const initialForm: CaseFormData = {
   firstName: "",
@@ -29,7 +62,7 @@ const initialForm: CaseFormData = {
   rut: "",
   email: "",
   phone: "",
-  companyName: "",
+  inmobiliariaId: "",
   incidentDate: "",
   claimedAmount: "",
   issueDescription: "",
@@ -37,6 +70,14 @@ const initialForm: CaseFormData = {
   priorCommunication: "",
   claimObjective: "",
   acceptTerms: false,
+  declaracionVeracidad: false,
+};
+
+const initialNewInmobiliaria: NewInmobiliariaData = {
+  rut: "",
+  name: "",
+  direccion: "",
+  contacto: "",
 };
 
 const amountOptions = [
@@ -51,30 +92,52 @@ const communicationOptions = [
   "No me he comunicado aún",
 ];
 
-// Variantes de animación para Framer Motion
-const formVariants: Variants = {
-  hidden: { opacity: 0, x: 20 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.3, ease: "easeOut" },
-  },
-  exit: {
-    opacity: 0,
-    x: -20,
-    transition: { duration: 0.2, ease: "easeIn" },
-  },
-};
+// ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function RegisterCaseForm({
   onSubmitSuccess,
 }: RegisterCaseFormProps) {
-  const [step, setStep] = useState(1);
   const [form, setForm] = useState<CaseFormData>(initialForm);
   const [errors, setErrors] = useState<
-    Partial<Record<keyof CaseFormData, string>>
+    Partial<Record<keyof CaseFormData | string, string>>
   >({});
+  const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  // Inmobiliarias state
+  const [inmobiliarias, setInmobiliarias] = useState<Inmobiliaria[]>([]);
+  const [loadingInmobiliarias, setLoadingInmobiliarias] = useState(false);
+  const [showNewInmobiliaria, setShowNewInmobiliaria] = useState(false);
+  const [newInmobiliaria, setNewInmobiliaria] = useState<NewInmobiliariaData>(
+    initialNewInmobiliaria,
+  );
+  const [newInmobiliariaErrors, setNewInmobiliariaErrors] = useState<
+    Partial<Record<keyof NewInmobiliariaData, string>>
+  >({});
+  const [creatingInmobiliaria, setCreatingInmobiliaria] = useState(false);
+
+  // ─── Fetch inmobiliarias ────────────────────────────────────────────
+
+  const fetchInmobiliarias = useCallback(async () => {
+    setLoadingInmobiliarias(true);
+    try {
+      const res = await fetch("/api/inmobiliarias");
+      const data = await res.json();
+      setInmobiliarias(Array.isArray(data) ? data : []);
+    } catch {
+      setInmobiliarias([]);
+    } finally {
+      setLoadingInmobiliarias(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchInmobiliarias();
+  }, [fetchInmobiliarias]);
+
+  // ─── Handlers ───────────────────────────────────────────────────────
 
   function handleChange(
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -92,504 +155,811 @@ export default function RegisterCaseForm({
     setErrors((prev) => ({ ...prev, [name]: "" }));
   }
 
-  // Validación por pasos
-  function validateStep1() {
-    const nextErrors: Partial<Record<keyof CaseFormData, string>> = {};
-    if (!form.firstName.trim()) nextErrors.firstName = "Ingresa tu nombre.";
-    if (!form.lastName.trim()) nextErrors.lastName = "Ingresa tu apellido.";
-    if (!form.rut.trim()) nextErrors.rut = "Ingresa tu RUT.";
-    if (!form.email.trim()) nextErrors.email = "Ingresa tu correo electrónico.";
-    if (!/\S+@\S+\.\S+/.test(form.email))
-      nextErrors.email = "Correo no válido.";
-    if (!form.phone.trim()) nextErrors.phone = "Ingresa tu teléfono.";
-
-    setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
+  function handleNewInmobiliariaChange(e: ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+    setNewInmobiliaria((prev) => ({ ...prev, [name]: value }));
+    setNewInmobiliariaErrors((prev) => ({ ...prev, [name]: "" }));
   }
 
-  function validateStep2() {
-    const nextErrors: Partial<Record<keyof CaseFormData, string>> = {};
-    if (!form.companyName.trim())
-      nextErrors.companyName = "Ingresa la empresa contra la que reclamas.";
-    if (!form.incidentDate.trim())
-      nextErrors.incidentDate = "Ingresa la fecha de los hechos.";
-    if (!form.claimedAmount.trim())
-      nextErrors.claimedAmount = "Selecciona un rango de precio.";
+  // ─── Validation per step ────────────────────────────────────────────
 
-    if (!form.issueDescription.trim()) {
-      nextErrors.issueDescription = "Describe cuál es el problema.";
-    } else if (form.issueDescription.trim().length < 30) {
-      nextErrors.issueDescription =
-        "Por favor, detalla un poco más el problema (mín. 30 caracteres).";
+  function validateStep(s: number): Partial<Record<string, string>> {
+    const nextErrors: Partial<Record<string, string>> = {};
+
+    if (s === 0) {
+      if (!form.firstName.trim()) nextErrors.firstName = "Ingresa tu nombre.";
+      if (!form.lastName.trim()) nextErrors.lastName = "Ingresa tu apellido.";
+      if (!form.rut.trim()) nextErrors.rut = "Ingresa tu RUT.";
+      if (!form.email.trim())
+        nextErrors.email = "Ingresa tu correo electrónico.";
+      else if (!/\S+@\S+\.\S+/.test(form.email))
+        nextErrors.email = "Correo no válido.";
+      if (!form.phone.trim()) nextErrors.phone = "Ingresa tu teléfono.";
     }
 
-    if (!form.expectedSolution.trim())
-      nextErrors.expectedSolution = "Indica qué debe hacer la empresa.";
-    if (!form.priorCommunication.trim())
-      nextErrors.priorCommunication = "Selecciona una opción.";
-    if (!form.claimObjective.trim())
-      nextErrors.claimObjective = "Indica qué objetivo esperas lograr.";
-
-    setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
-  }
-
-  function validateStep3() {
-    const nextErrors: Partial<Record<keyof CaseFormData, string>> = {};
-    if (!form.acceptTerms) {
-      nextErrors.acceptTerms =
-        "Debes aceptar las condiciones y el tratamiento de datos para continuar.";
+    if (s === 1) {
+      if (!form.inmobiliariaId.trim())
+        nextErrors.inmobiliariaId = "Selecciona una inmobiliaria.";
+      if (!form.declaracionVeracidad)
+        nextErrors.declaracionVeracidad =
+          "Debes declarar que la información es verídica.";
     }
-    setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
+
+    if (s === 2) {
+      if (!form.incidentDate.trim())
+        nextErrors.incidentDate = "Ingresa la fecha de los hechos.";
+      if (!form.claimedAmount.trim())
+        nextErrors.claimedAmount = "Selecciona un rango de precio.";
+      if (!form.issueDescription.trim()) {
+        nextErrors.issueDescription = "Describe cuál es el problema.";
+      } else if (form.issueDescription.trim().length < 30) {
+        nextErrors.issueDescription =
+          "Por favor, detalla un poco más el problema (mín. 30 caracteres).";
+      }
+      if (!form.expectedSolution.trim())
+        nextErrors.expectedSolution = "Indica qué debe hacer la empresa.";
+      if (!form.priorCommunication.trim())
+        nextErrors.priorCommunication = "Selecciona una opción.";
+      if (!form.claimObjective.trim())
+        nextErrors.claimObjective = "Indica qué objetivo esperas lograr.";
+    }
+
+    if (s === 3) {
+      if (!form.acceptTerms) {
+        nextErrors.acceptTerms =
+          "Debes aceptar las condiciones y el tratamiento de datos.";
+      }
+    }
+
+    return nextErrors;
   }
 
-  // Navegación
+  function validateNewInmobiliaria(): Partial<
+    Record<keyof NewInmobiliariaData, string>
+  > {
+    const errs: Partial<Record<keyof NewInmobiliariaData, string>> = {};
+    if (!newInmobiliaria.rut.trim())
+      errs.rut = "Ingresa el RUT de la inmobiliaria.";
+    if (!newInmobiliaria.name.trim())
+      errs.name = "Ingresa el nombre de la inmobiliaria.";
+    if (!newInmobiliaria.direccion.trim())
+      errs.direccion = "Ingresa la dirección de la inmobiliaria.";
+    if (!newInmobiliaria.contacto.trim())
+      errs.contacto = "Ingresa un medio de contacto.";
+    return errs;
+  }
+
+  // ─── Navigation ─────────────────────────────────────────────────────
+
   function handleNext() {
-    if (step === 1 && validateStep1()) {
-      setStep(2);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else if (step === 2 && validateStep2()) {
-      setStep(3);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    const stepErrors = validateStep(step);
+    setErrors(stepErrors);
+    if (Object.keys(stepErrors).length > 0) return;
+    setStep((prev) => Math.min(prev + 1, 3));
+  }
+
+  function handleBack() {
+    setStep((prev) => Math.max(prev - 1, 0));
+  }
+
+  function goToStep(s: number) {
+    // Solo permite ir a pasos ya completados o al actual
+    if (s <= step) {
+      setStep(s);
     }
   }
 
-  function handlePrev() {
-    setStep((prev) => prev - 1);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  // ─── Create Inmobiliaria ────────────────────────────────────────────
+
+  async function handleCreateInmobiliaria() {
+    const errs = validateNewInmobiliaria();
+    setNewInmobiliariaErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
+    setCreatingInmobiliaria(true);
+    try {
+      const res = await fetch("/api/inmobiliarias", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newInmobiliaria),
+      });
+      const data = await res.json();
+
+      if (data.ok && data.id) {
+        // Refresh list & select the new one
+        await fetchInmobiliarias();
+        setForm((prev) => ({ ...prev, inmobiliariaId: data.id }));
+        setNewInmobiliaria(initialNewInmobiliaria);
+        setShowNewInmobiliaria(false);
+        setErrors((prev) => ({ ...prev, inmobiliariaId: "" }));
+      }
+    } catch {
+      setNewInmobiliariaErrors({
+        name: "Error al crear la inmobiliaria. Inténtalo de nuevo.",
+      });
+    } finally {
+      setCreatingInmobiliaria(false);
+    }
   }
+
+  // ─── Submit ─────────────────────────────────────────────────────────
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    if (!validateStep3()) return;
+    const validationErrors = validateStep(3);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
 
     try {
       setIsSubmitting(true);
-      // Simulación de envío a la API (800ms)
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      setSubmitError("");
 
-      onSubmitSuccess?.(form);
-      setForm(initialForm);
-      setStep(1);
-      setErrors({});
+      const res = await fetch("/api/case", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          rut: form.rut,
+          email: form.email,
+          phone: form.phone,
+          inmobiliariaId: form.inmobiliariaId,
+          incidentDate: form.incidentDate,
+          claimedAmount: form.claimedAmount,
+          issueDescription: form.issueDescription,
+          expectedSolution: form.expectedSolution,
+          priorCommunication: form.priorCommunication,
+          claimObjective: form.claimObjective,
+          acceptTerms: form.acceptTerms,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.ok) {
+        setSubmitError(data.error || "Ocurrió un error al enviar el reclamo.");
+        return;
+      }
+
+      setSubmitSuccess(true);
+      setStep(4); // <- Cambiamos al paso 4 (Vista de éxito)
+      // ELIMINADO: onSubmitSuccess?.(form); -> Esto cerraba el modal inmediatamente. Lo pasamos al botón de "Entendido" en el paso 4.
+    } catch {
+      setSubmitError("Error de conexión. Inténtalo de nuevo.");
     } finally {
       setIsSubmitting(false);
     }
   }
 
+  // ─── Selected inmobiliaria name ─────────────────────────────────────
+
+  const selectedInmobiliariaName = useMemo(() => {
+    const found = inmobiliarias.find((i) => i._id === form.inmobiliariaId);
+    return found?.name || "—";
+  }, [inmobiliarias, form.inmobiliariaId]);
+
+  // ─── Render ─────────────────────────────────────────────────────────
+
   return (
-    <div className="mx-auto w-full max-w-3xl bg-white p-6 sm:p-8">
-      {/* Indicador de Progreso (Stepper) */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between text-sm font-medium">
-          <span className={step >= 1 ? "text-red" : "text-gray-400"}>
-            1. Datos
-          </span>
-          <div
-            className={`h-px flex-1 mx-4 ${step >= 2 ? "bg-red" : "bg-gray-200"}`}
+    <form
+      onSubmit={handleSubmit}
+      className="relative z-10 w-full space-y-6 p-1 z-[100]"
+    >
+      {/* Ocultamos el Header y el Stepper si estamos en la vista de éxito (step === 4) */}
+      {step < 4 && (
+        <>
+          {/* Header */}
+          <div>
+            <h2 className="text-2xl font-extrabold text-dark">
+              Registrar mi reclamo
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-dark">
+              Completa este formulario detallando tu situación para gestionar el
+              incumplimiento.
+            </p>
+          </div>
+
+          {/* Stepper */}
+          <Stepper
+            currentStep={step}
+            labels={STEP_LABELS}
+            onStepClick={goToStep}
           />
-          <span className={step >= 2 ? "text-red" : "text-gray-400"}>
-            2. Reclamo
-          </span>
-          <div
-            className={`h-px flex-1 mx-4 ${step >= 3 ? "bg-red" : "bg-gray-200"}`}
-          />
-          <span className={step >= 3 ? "text-red" : "text-gray-400"}>
-            3. Confirmación
-          </span>
+        </>
+      )}
+
+      {/* ─── STEP 0 : Datos Personales ───────────────────────────────── */}
+      {step === 0 && (
+        <div className="grid gap-4 md:grid-cols-2">
+          <Field>
+            <Label htmlFor="firstName">Nombre *</Label>
+            <Input
+              id="firstName"
+              name="firstName"
+              value={form.firstName}
+              onChange={handleChange}
+              placeholder="Tu nombre"
+            />
+            <ErrorText message={errors.firstName} />
+          </Field>
+
+          <Field>
+            <Label htmlFor="lastName">Apellido *</Label>
+            <Input
+              id="lastName"
+              name="lastName"
+              value={form.lastName}
+              onChange={handleChange}
+              placeholder="Tu apellido"
+            />
+            <ErrorText message={errors.lastName} />
+          </Field>
+
+          <Field>
+            <Label htmlFor="rut">RUT *</Label>
+            <Input
+              id="rut"
+              name="rut"
+              value={form.rut}
+              onChange={handleChange}
+              placeholder="12.345.678-9"
+            />
+            <ErrorText message={errors.rut} />
+          </Field>
+
+          <Field>
+            <Label htmlFor="email">Correo electrónico *</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="correo@ejemplo.com"
+            />
+            <ErrorText message={errors.email} />
+          </Field>
+
+          <Field className="md:col-span-2">
+            <Label htmlFor="phone">Teléfono *</Label>
+            <Input
+              id="phone"
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
+              placeholder="+56 9 1234 5678"
+            />
+            <ErrorText message={errors.phone} />
+          </Field>
         </div>
-      </div>
+      )}
 
-      <form
-        onSubmit={handleSubmit}
-        className="relative z-10 w-full text-left overflow-y-auto scrollbar-hide"
-      >
-        <AnimatePresence mode="wait">
-          {/* PASO 1: DATOS PERSONALES */}
-          {step === 1 && (
-            <motion.div
-              key="step1"
-              variants={formVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              className="space-y-6"
+      {/* ─── STEP 1 : Inmobiliaria ───────────────────────────────────── */}
+      {step === 1 && (
+        <div className="space-y-5">
+          <Field>
+            <Label htmlFor="inmobiliariaId">Selecciona la inmobiliaria *</Label>
+            <Select
+              id="inmobiliariaId"
+              name="inmobiliariaId"
+              value={form.inmobiliariaId}
+              onChange={handleChange}
+              disabled={loadingInmobiliarias}
             >
-              <div>
-                <h2 className="text-2xl font-extrabold text-dark">
-                  Datos personales
-                </h2>
-                <p className="mt-1 text-sm text-gray-500">
-                  Ingresa tu información de contacto principal.
-                </p>
-              </div>
+              <option value="">
+                {loadingInmobiliarias
+                  ? "Cargando inmobiliarias..."
+                  : "Selecciona una inmobiliaria"}
+              </option>
+              {inmobiliarias.map((inm) => (
+                <option key={inm._id} value={inm._id}>
+                  {inm.name}
+                </option>
+              ))}
+            </Select>
+            <ErrorText message={errors.inmobiliariaId} />
+          </Field>
 
-              <div className="grid gap-5 md:grid-cols-2">
-                <Field>
-                  <Label htmlFor="firstName">Nombre *</Label>
-                  <Input
-                    id="firstName"
-                    name="firstName"
-                    value={form.firstName}
-                    onChange={handleChange}
-                    placeholder="Tu nombre"
-                    error={!!errors.firstName}
-                  />
-                  <ErrorText message={errors.firstName} />
-                </Field>
+          {/* Toggle crear nueva */}
+          <button
+            type="button"
+            onClick={() => setShowNewInmobiliaria((prev) => !prev)}
+            className="inline-flex items-center gap-2 text-sm font-semibold text-red transition hover:text-[#01a863] cursor-pointer"
+          >
+            <span className="flex h-5 w-5 items-center justify-center rounded-full border border-[#01c676]/40 text-xs">
+              {showNewInmobiliaria ? "−" : "+"}
+            </span>
+            {showNewInmobiliaria
+              ? "Cancelar registro"
+              : "¿No encuentras tu inmobiliaria? Regístrala aquí"}
+          </button>
 
-                <Field>
-                  <Label htmlFor="lastName">Apellido *</Label>
-                  <Input
-                    id="lastName"
-                    name="lastName"
-                    value={form.lastName}
-                    onChange={handleChange}
-                    placeholder="Tu apellido"
-                    error={!!errors.lastName}
-                  />
-                  <ErrorText message={errors.lastName} />
-                </Field>
+          {/* Sub-formulario nueva inmobiliaria */}
+          {showNewInmobiliaria && (
+            <div className="space-y-4 rounded-[var(--radius-md)] border border-[#01c676]/20 bg-[#021f41]/40 p-5">
+              <p className="text-sm font-semibold text-[var(--color-text-primary)]">
+                Registrar nueva inmobiliaria
+              </p>
 
+              <div className="grid gap-4 md:grid-cols-2">
                 <Field>
-                  <Label htmlFor="rut">RUT *</Label>
+                  <Label htmlFor="newInm-rut">RUT de la inmobiliaria *</Label>
                   <Input
-                    id="rut"
+                    id="newInm-rut"
                     name="rut"
-                    value={form.rut}
-                    onChange={handleChange}
-                    placeholder="Ej: 12.345.678-9"
-                    error={!!errors.rut}
+                    value={newInmobiliaria.rut}
+                    onChange={handleNewInmobiliariaChange}
+                    placeholder="76.123.456-7"
                   />
-                  <ErrorText message={errors.rut} />
+                  <ErrorText message={newInmobiliariaErrors.rut} />
                 </Field>
 
                 <Field>
-                  <Label htmlFor="phone">Teléfono *</Label>
+                  <Label htmlFor="newInm-name">Nombre *</Label>
                   <Input
-                    id="phone"
-                    name="phone"
-                    value={form.phone}
-                    onChange={handleChange}
-                    placeholder="+56 9 1234 5678"
-                    error={!!errors.phone}
+                    id="newInm-name"
+                    name="name"
+                    value={newInmobiliaria.name}
+                    onChange={handleNewInmobiliariaChange}
+                    placeholder="Nombre de la inmobiliaria"
                   />
-                  <ErrorText message={errors.phone} />
+                  <ErrorText message={newInmobiliariaErrors.name} />
                 </Field>
 
-                <Field className="md:col-span-2">
-                  <Label htmlFor="email">Correo electrónico *</Label>
+                <Field>
+                  <Label htmlFor="newInm-direccion">Dirección *</Label>
                   <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    placeholder="correo@ejemplo.com"
-                    error={!!errors.email}
+                    id="newInm-direccion"
+                    name="direccion"
+                    value={newInmobiliaria.direccion}
+                    onChange={handleNewInmobiliariaChange}
+                    placeholder="Av. Ejemplo 1234, Santiago"
                   />
-                  <ErrorText message={errors.email} />
+                  <ErrorText message={newInmobiliariaErrors.direccion} />
                 </Field>
-              </div>
-            </motion.div>
-          )}
 
-          {/* PASO 2: INFORMACIÓN DEL RECLAMO */}
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              variants={formVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              className="space-y-6"
-            >
-              <div>
-                <h2 className="text-2xl font-extrabold text-dark">
-                  Información del reclamo
-                </h2>
-                <p className="mt-1 text-sm text-gray-500">
-                  Detalla lo ocurrido con la empresa.
-                </p>
-              </div>
-
-              <div className="grid gap-5 md:grid-cols-2">
                 <Field>
-                  <Label htmlFor="companyName">
-                    ¿Contra qué empresa reclama? *
-                  </Label>
+                  <Label htmlFor="newInm-contacto">Medio de contacto *</Label>
                   <Input
-                    id="companyName"
-                    name="companyName"
-                    value={form.companyName}
-                    onChange={handleChange}
-                    placeholder="Nombre de la empresa"
-                    error={!!errors.companyName}
+                    id="newInm-contacto"
+                    name="contacto"
+                    value={newInmobiliaria.contacto}
+                    onChange={handleNewInmobiliariaChange}
+                    placeholder="Email, teléfono o red social"
                   />
-                  <ErrorText message={errors.companyName} />
-                </Field>
-
-                <Field>
-                  <Label htmlFor="incidentDate">Fecha de los hechos *</Label>
-                  <Input
-                    id="incidentDate"
-                    name="incidentDate"
-                    type="date"
-                    value={form.incidentDate}
-                    onChange={handleChange}
-                    error={!!errors.incidentDate}
-                  />
-                  <ErrorText message={errors.incidentDate} />
-                </Field>
-
-                <Field>
-                  <Label htmlFor="claimedAmount">Precio reclamado *</Label>
-                  <Select
-                    id="claimedAmount"
-                    name="claimedAmount"
-                    value={form.claimedAmount}
-                    onChange={handleChange}
-                    error={!!errors.claimedAmount}
-                  >
-                    <option value="">Selecciona un rango</option>
-                    {amountOptions.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </Select>
-                  <ErrorText message={errors.claimedAmount} />
-                </Field>
-
-                <Field>
-                  <Label htmlFor="priorCommunication">
-                    ¿Se ha comunicado previamente? *
-                  </Label>
-                  <Select
-                    id="priorCommunication"
-                    name="priorCommunication"
-                    value={form.priorCommunication}
-                    onChange={handleChange}
-                    error={!!errors.priorCommunication}
-                  >
-                    <option value="">Selecciona una opción</option>
-                    {communicationOptions.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </Select>
-                  <ErrorText message={errors.priorCommunication} />
-                </Field>
-
-                <Field className="md:col-span-2">
-                  <Label htmlFor="issueDescription">
-                    ¿Cuál es el problema? *
-                  </Label>
-                  <Textarea
-                    id="issueDescription"
-                    name="issueDescription"
-                    value={form.issueDescription}
-                    onChange={handleChange}
-                    placeholder="Describe detalladamente el incumplimiento..."
-                    error={!!errors.issueDescription}
-                  />
-                  <ErrorText message={errors.issueDescription} />
-                </Field>
-
-                <Field className="md:col-span-2">
-                  <Label htmlFor="expectedSolution">
-                    ¿Qué debe hacer la empresa para solucionarlo? *
-                  </Label>
-                  <Textarea
-                    id="expectedSolution"
-                    name="expectedSolution"
-                    rows={3}
-                    value={form.expectedSolution}
-                    onChange={handleChange}
-                    placeholder="Ej: Devolución del dinero..."
-                    error={!!errors.expectedSolution}
-                  />
-                  <ErrorText message={errors.expectedSolution} />
-                </Field>
-
-                <Field className="md:col-span-2">
-                  <Label htmlFor="claimObjective">
-                    ¿Qué objetivo espera lograr con su reclamo? *
-                  </Label>
-                  <Textarea
-                    id="claimObjective"
-                    name="claimObjective"
-                    rows={3}
-                    value={form.claimObjective}
-                    onChange={handleChange}
-                    placeholder="Tu objetivo final al presentar este caso..."
-                    error={!!errors.claimObjective}
-                  />
-                  <ErrorText message={errors.claimObjective} />
+                  <ErrorText message={newInmobiliariaErrors.contacto} />
                 </Field>
               </div>
-            </motion.div>
-          )}
 
-          {/* PASO 3: CONFIRMACIÓN Y TÉRMINOS */}
-          {step === 3 && (
-            <motion.div
-              key="step3"
-              variants={formVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              className="space-y-6"
-            >
-              <div>
-                <h2 className="text-2xl font-extrabold text-dark">
-                  Confirmación final
-                </h2>
-                <p className="mt-1 text-sm text-gray-500">
-                  Revisa tu información y acepta los términos.
-                </p>
-              </div>
-
-              {/* Resumen de la información */}
-              <div className="rounded-xl border border-gray-100 bg-gray-50 p-5 space-y-4">
-                <div>
-                  <h3 className="text-sm font-bold text-dark mb-2">
-                    Datos personales
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
-                    <p>
-                      <span className="font-medium text-gray-800">Nombre:</span>{" "}
-                      {form.firstName} {form.lastName}
-                    </p>
-                    <p>
-                      <span className="font-medium text-gray-800">RUT:</span>{" "}
-                      {form.rut}
-                    </p>
-                    <p>
-                      <span className="font-medium text-gray-800">Correo:</span>{" "}
-                      {form.email}
-                    </p>
-                    <p>
-                      <span className="font-medium text-gray-800">
-                        Teléfono:
-                      </span>{" "}
-                      {form.phone}
-                    </p>
-                  </div>
-                </div>
-                <div className="h-px w-full bg-gray-200" />
-                <div>
-                  <h3 className="text-sm font-bold text-dark mb-2">
-                    Detalle del reclamo
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
-                    <p>
-                      <span className="font-medium text-gray-800">
-                        Empresa:
-                      </span>{" "}
-                      {form.companyName}
-                    </p>
-                    <p>
-                      <span className="font-medium text-gray-800">Fecha:</span>{" "}
-                      {form.incidentDate}
-                    </p>
-                    <p>
-                      <span className="font-medium text-gray-800">Monto:</span>{" "}
-                      {form.claimedAmount}
-                    </p>
-                    <p className="sm:col-span-2 mt-1">
-                      <span className="font-medium text-gray-800 block mb-1">
-                        Problema:
-                      </span>{" "}
-                      <span className="line-clamp-2 italic">
-                        {form.issueDescription}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Checkbox de términos */}
-              <div
-                className={`space-y-3 rounded-xl border ${errors.acceptTerms ? "border-red-300 bg-red-50" : "border-[#01c676]/20 bg-[#01c676]/5"} p-5 transition-colors`}
+              <button
+                type="button"
+                onClick={handleCreateInmobiliaria}
+                disabled={creatingInmobiliaria}
+                className="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-red px-6 py-2.5 text-sm font-bold uppercase tracking-wide text-white shadow-[0_4px_14px_0_rgba(1,198,118,0.39)] transition hover:bg-[#01a863] disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <CheckboxRow>
-                  <input
-                    id="acceptTerms"
-                    name="acceptTerms"
-                    type="checkbox"
-                    checked={form.acceptTerms}
-                    onChange={handleChange}
-                    className="mt-1 h-5 w-5 shrink-0 cursor-pointer accent-[#01c676] rounded border-gray-300"
-                  />
-                  <div>
-                    <Label
-                      htmlFor="acceptTerms"
-                      className="cursor-pointer text-sm font-medium leading-relaxed text-dark mb-0"
-                    >
-                      Estoy interesado en ser contactado y autorizo a promesa.cl
-                      a enviar y gestionar los datos de mi reclamo con:
-                      <ul className="list-disc pl-5 mt-2 mb-3 space-y-1 font-normal text-gray-600">
-                        <li>Empresas o instituciones aludidas</li>
-                        <li>Periodistas y medios de comunicación</li>
-                        <li>ONG para procesos de mediación colectiva</li>
-                      </ul>
-                      Además, acepto los términos y condiciones del servicio y
-                      declaro conocerlos. *
-                    </Label>
-                    <ErrorText message={errors.acceptTerms} />
-                  </div>
-                </CheckboxRow>
+                {creatingInmobiliaria ? "Creando..." : "Registrar inmobiliaria"}
+              </button>
+            </div>
+          )}
+
+          {/* Checkbox veracidad */}
+          <div className="space-y-3 rounded-[var(--radius-md)] border border-[#01c676]/20 bg-white p-5">
+            <CheckboxRow>
+              <input
+                id="declaracionVeracidad"
+                name="declaracionVeracidad"
+                type="checkbox"
+                checked={form.declaracionVeracidad}
+                onChange={handleChange}
+                className="mt-1 h-5 w-5 shrink-0 rounded-full accent-[#01c676] cursor-pointer text-red"
+              />
+              <div>
+                <Label
+                  htmlFor="declaracionVeracidad"
+                  className="cursor-pointer text-sm font-medium leading-relaxed "
+                >
+                  Declaro que la información proporcionada es verídica y
+                  correcta. *
+                </Label>
+                <ErrorText message={errors.declaracionVeracidad} />
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </CheckboxRow>
+          </div>
+        </div>
+      )}
 
-        {/* Controles de Navegación */}
-        <div className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:items-center sm:justify-between border-t border-gray-100 pt-6">
-          {step > 1 ? (
-            <button
-              type="button"
-              onClick={handlePrev}
-              className="inline-flex items-center justify-center rounded-md border border-gray-200 bg-white px-6 py-2.5 text-sm font-bold text-gray-600 transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200"
-            >
-              ← Anterior
-            </button>
-          ) : (
-            <div /> // Espaciador para alinear el botón 'Siguiente' a la derecha
-          )}
+      {/* ─── STEP 2 : Detalle del Reclamo ────────────────────────────── */}
+      {step === 2 && (
+        <div className="grid gap-4 md:grid-cols-2">
+          <Field>
+            <Label htmlFor="incidentDate">Fecha de los hechos *</Label>
+            <Input
+              id="incidentDate"
+              name="incidentDate"
+              type="date"
+              value={form.incidentDate}
+              onChange={handleChange}
+            />
+            <ErrorText message={errors.incidentDate} />
+          </Field>
 
-          {step < 3 ? (
-            <button
-              type="button"
-              onClick={handleNext}
-              className="inline-flex items-center justify-center rounded-md bg-red px-8 py-2.5 text-sm font-extrabold uppercase tracking-wide text-white shadow-[0_4px_14px_0_rgba(1,198,118,0.39)] transition hover:bg-red-hover focus:outline-none focus:ring-2 focus:ring-red-hover"
+          <Field>
+            <Label htmlFor="claimedAmount">Precio reclamado *</Label>
+            <Select
+              id="claimedAmount"
+              name="claimedAmount"
+              value={form.claimedAmount}
+              onChange={handleChange}
             >
-              Siguiente →
-            </button>
-          ) : (
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="inline-flex items-center justify-center rounded-md bg-red px-8 py-2.5 text-sm font-extrabold uppercase tracking-wide text-white shadow-[0_4px_14px_0_rgba(1,198,118,0.39)] transition hover:bg-red-hover focus:outline-none focus:ring-2 focus:ring-red-hover disabled:cursor-not-allowed disabled:opacity-70"
+              <option value="">Selecciona un rango</option>
+              {amountOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </Select>
+            <ErrorText message={errors.claimedAmount} />
+          </Field>
+
+          <Field className="md:col-span-2">
+            <Label htmlFor="issueDescription">¿Cuál es el problema? *</Label>
+            <Textarea
+              id="issueDescription"
+              name="issueDescription"
+              value={form.issueDescription}
+              onChange={handleChange}
+              placeholder="Describe detalladamente el incumplimiento o problema..."
+            />
+            <ErrorText message={errors.issueDescription} />
+          </Field>
+
+          <Field className="md:col-span-2">
+            <Label htmlFor="expectedSolution">
+              ¿Qué debe hacer la empresa para solucionarlo? *
+            </Label>
+            <Textarea
+              id="expectedSolution"
+              name="expectedSolution"
+              rows={3}
+              value={form.expectedSolution}
+              onChange={handleChange}
+              placeholder="Ej: Devolución del dinero, entrega inmediata, compensación..."
+            />
+            <ErrorText message={errors.expectedSolution} />
+          </Field>
+
+          <Field>
+            <Label htmlFor="priorCommunication">
+              ¿Se ha comunicado previamente con la empresa? *
+            </Label>
+            <Select
+              id="priorCommunication"
+              name="priorCommunication"
+              value={form.priorCommunication}
+              onChange={handleChange}
             >
-              {isSubmitting ? "Enviando..." : "Enviar reclamo"}
-            </button>
+              <option value="">Selecciona una opción</option>
+              {communicationOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </Select>
+            <ErrorText message={errors.priorCommunication} />
+          </Field>
+
+          <Field className="md:col-span-2">
+            <Label htmlFor="claimObjective">
+              ¿Qué objetivo espera lograr con su reclamo? *
+            </Label>
+            <Textarea
+              id="claimObjective"
+              name="claimObjective"
+              rows={3}
+              value={form.claimObjective}
+              onChange={handleChange}
+              placeholder="Tu objetivo final al presentar este caso..."
+            />
+            <ErrorText message={errors.claimObjective} />
+          </Field>
+        </div>
+      )}
+
+      {/* ─── STEP 3 : Confirmación ───────────────────────────────────── */}
+      {step === 3 && (
+        <div className="space-y-5">
+          {/* Resumen */}
+          <div className="space-y-4 rounded-[var(--radius-md)] border border-white/10 bg-[#021f41]/40 p-5">
+            <h3 className="text-base font-bold text-[var(--color-text-primary)]">
+              Resumen de tu reclamo
+            </h3>
+
+            <SummarySection title="Datos personales">
+              <SummaryRow
+                label="Nombre"
+                value={`${form.firstName} ${form.lastName}`}
+              />
+              <SummaryRow label="RUT" value={form.rut} />
+              <SummaryRow label="Email" value={form.email} />
+              <SummaryRow label="Teléfono" value={form.phone} />
+            </SummarySection>
+
+            <SummarySection title="Inmobiliaria">
+              <SummaryRow
+                label="Inmobiliaria"
+                value={selectedInmobiliariaName}
+              />
+            </SummarySection>
+
+            <SummarySection title="Detalle del reclamo">
+              <SummaryRow
+                label="Fecha de los hechos"
+                value={form.incidentDate}
+              />
+              <SummaryRow label="Precio reclamado" value={form.claimedAmount} />
+              <SummaryRow label="Problema" value={form.issueDescription} />
+              <SummaryRow
+                label="Solución esperada"
+                value={form.expectedSolution}
+              />
+              <SummaryRow
+                label="Comunicación previa"
+                value={form.priorCommunication}
+              />
+              <SummaryRow
+                label="Objetivo del reclamo"
+                value={form.claimObjective}
+              />
+            </SummarySection>
+          </div>
+
+          {/* Checkbox Terms */}
+          <div className="space-y-3 rounded-[var(--radius-md)] border border-white/10 bg-white p-5">
+            <CheckboxRow>
+              <input
+                id="acceptTerms"
+                name="acceptTerms"
+                type="checkbox"
+                checked={form.acceptTerms}
+                onChange={handleChange}
+                className="mt-1 h-5 w-5 shrink-0 accent-[#01c676] cursor-pointer"
+              />
+              <div>
+                <Label
+                  htmlFor="acceptTerms"
+                  className="cursor-pointer text-sm font-medium leading-relaxed"
+                >
+                  Estoy interesado en ser contactado y autorizo a promesa.cl a
+                  enviar y gestionar los datos de mi reclamo con:
+                  <ul className="list-disc pl-5 mt-2 mb-3 space-y-1 font-normal text-dark">
+                    <li>Empresas o instituciones aludidas</li>
+                    <li>Periodistas y medios de comunicación</li>
+                    <li>ONG para procesos de mediación colectiva</li>
+                  </ul>
+                  <span className="text-red">
+                    Además, acepto los términos y condiciones del servicio y
+                    declaro conocerlos. *
+                  </span>
+                </Label>
+                <ErrorText message={errors.acceptTerms} />
+              </div>
+            </CheckboxRow>
+          </div>
+
+          {submitError && (
+            <p className="text-sm font-medium text-red-400">{submitError}</p>
           )}
         </div>
-      </form>
+      )}
+
+      {/* ─── STEP 4 : Success (Quinta Vista) ────────────────────────────── */}
+      {step === 4 && (
+        <div className="relative z-10 w-full space-y-6 py-10 text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#01c676]/20">
+            <svg
+              className="h-8 w-8 text-[#01c676]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-extrabold text-dark">
+            ¡Reclamo enviado exitosamente!
+          </h2>
+          <p className="text-sm leading-relaxed text-dark max-w-md mx-auto">
+            Tu caso ha sido registrado correctamente. Nuestro equipo lo revisará
+            y nos pondremos en contacto contigo a la brevedad.
+          </p>
+
+          <div className="pt-6">
+            <button
+              type="button"
+              onClick={() => onSubmitSuccess?.(form)}
+              className="inline-flex items-center justify-center rounded-md bg-red px-8 py-3 text-sm font-extrabold uppercase tracking-wide text-white shadow-[0_4px_14px_0_rgba(215,38,46,0.39)] transition hover:bg-red-hover cursor-pointer"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ─── Navigation buttons ──────────────────────────────────────── */}
+      {/* Ocultamos los botones de navegación en el paso de éxito */}
+      {step < 4 && (
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs leading-relaxed text-[var(--color-text-muted)]">
+            {step < 3
+              ? "Los campos marcados con * son obligatorios."
+              : "Revisa toda la información antes de enviar."}
+          </p>
+
+          <div className="flex gap-3">
+            {step > 0 && (
+              <button
+                type="button"
+                onClick={handleBack}
+                className="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-white/10 bg-transparent px-6 py-3 text-sm font-bold uppercase tracking-wide text-[var(--color-text-secondary)] transition hover:bg-white/5 cursor-pointer"
+              >
+                Atrás
+              </button>
+            )}
+
+            {step < 3 ? (
+              <button
+                type="button"
+                onClick={handleNext}
+                className="inline-flex items-center justify-center rounded-md bg-red px-8 py-3 text-sm font-extrabold uppercase tracking-wide text-white shadow-[0_4px_14px_0_rgba(215,38,46,0.39)] transition hover:bg-red-hover cursor-pointer"
+              >
+                Siguiente
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={!form.acceptTerms || isSubmitting}
+                className="inline-flex items-center justify-center rounded-md bg-red px-8 py-3 text-sm font-extrabold uppercase tracking-wide text-white shadow-[0_4px_14px_0_rgba(215,38,46,0.39)] transition hover:bg-red-hover disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isSubmitting ? "Enviando..." : "Enviar reclamo"}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </form>
+  );
+}
+
+// ─── Stepper Component ────────────────────────────────────────────────────
+
+type StepperProps = {
+  currentStep: number;
+  labels: string[];
+  onStepClick: (step: number) => void;
+};
+
+function Stepper({ currentStep, labels, onStepClick }: StepperProps) {
+  return (
+    <div className="flex items-center gap-1">
+      {labels.map((label, index) => {
+        const isActive = index === currentStep;
+        const isCompleted = index < currentStep;
+
+        return (
+          <div
+            key={label}
+            className="flex items-center flex-1 last:flex-initial"
+          >
+            {/* Step circle + label */}
+            <button
+              type="button"
+              onClick={() => onStepClick(index)}
+              className={`flex flex-col items-center gap-1.5 transition cursor-pointer group min-w-[60px] ${
+                isActive || isCompleted ? "" : "opacity-40"
+              }`}
+            >
+              <span
+                className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all ${
+                  isActive
+                    ? "bg-red text-white shadow-red"
+                    : isCompleted
+                      ? "bg-dark/20 t ext-dark border border-dark/40"
+                      : "border border-dark text-dark"
+                }`}
+              >
+                {isCompleted ? (
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                ) : (
+                  index + 1
+                )}
+              </span>
+              <span
+                className={`text-[10px] font-semibold leading-tight text-center hidden sm:block ${
+                  isActive
+                    ? "text-dark font-bold"
+                    : isCompleted
+                      ? "text-dark" // avanzado
+                      : "text-gray-light" // pendiente
+                }`}
+              >
+                {label}
+              </span>
+            </button>
+
+            {/* Connector line */}
+            {index < labels.length - 1 && (
+              <div className="flex-1 mx-2">
+                <div
+                  className={`h-[2px] w-full rounded-full transition-all ${
+                    index < currentStep ? "bg-red" : "bg-gray-light"
+                  }`}
+                />
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
 
-// --- Subcomponentes de UI ---
+// ─── Summary sub-components ──────────────────────────────────────────────
 
-type FieldProps = { children: React.ReactNode; className?: string };
+function SummarySection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-2">
+      <p className="text-xs font-bold uppercase tracking-wider text-dark">
+        {title}
+      </p>
+      <div className="space-y-1.5">{children}</div>
+    </div>
+  );
+}
+
+function SummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col sm:flex-row sm:gap-2">
+      <span className="text-sm font-semibold text-dark sm:w-40 shrink-0 text-start">
+        {label}:
+      </span>
+      <span className="text-sm text-dark break-words">{value || "—"} </span>
+    </div>
+  );
+}
+
+// ─── UI sub-components (preserved from original) ────────────────────────
+
+type FieldProps = {
+  children: React.ReactNode;
+  className?: string;
+};
+
 function Field({ children, className = "" }: FieldProps) {
-  return <div className={`flex flex-col ${className}`}>{children}</div>;
+  return <div className={className}>{children}</div>;
 }
 
 type LabelProps = {
@@ -597,73 +967,54 @@ type LabelProps = {
   htmlFor?: string;
   className?: string;
 };
+
 function Label({ children, htmlFor, className = "" }: LabelProps) {
   return (
     <label
       htmlFor={htmlFor}
-      className={`mb-1.5 block text-sm font-semibold text-gray-800 ${className}`}
+      className={`mb-2 block text-sm font-semibold text-dark ${className}`}
     >
       {children}
     </label>
   );
 }
 
-// Interfaces extendidas para incluir la prop "error"
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  error?: boolean;
-}
-function Input({ error, className, ...props }: InputProps) {
+function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className={`w-full rounded-md border bg-white px-4 py-2.5 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 focus:ring-2 
-      ${error ? "border-red-400 focus:border-red-500 focus:ring-red-100" : "border-gray-300 focus:border-[#01c676] focus:ring-[#01c676]/20"} ${className || ""}`}
+      className="w-full rounded-sm border border-white/10 bg-white px-4 py-3 text-sm text-dark outline-none transition placeholder:text-gray-light focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
     />
   );
 }
 
-interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  error?: boolean;
-}
-function Select({ error, className, ...props }: SelectProps) {
+function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <select
       {...props}
-      className={`w-full rounded-md border bg-white px-4 py-2.5 text-sm text-gray-800 outline-none transition focus:ring-2 
-      ${error ? "border-red-400 focus:border-red-500 focus:ring-red-100" : "border-gray-300 focus:border-[#01c676] focus:ring-[#01c676]/20"} ${className || ""}`}
+      className="w-full rounded-sm border border-white/10 bg-white px-4 py-3 text-sm text-dark outline-none transition focus:border-red"
     >
       {props.children}
     </select>
   );
 }
 
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  error?: boolean;
-}
-function Textarea({ error, className, ...props }: TextareaProps) {
+function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea
       {...props}
-      rows={props.rows || 5}
-      className={`w-full resize-none rounded-md border bg-white px-4 py-2.5 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 focus:ring-2 
-      ${error ? "border-red-400 focus:border-red-500 focus:ring-red-100" : "border-gray-300 focus:border-[#01c676] focus:ring-[#01c676]/20"} ${className || ""}`}
+      rows={props.rows || 6}
+      className="w-full resize-none rounded-sm border border-white/10 bg-white px-4 py-3 text-sm text-dark outline-none transition placeholder:text-[var(--color-text-muted)] focus:border-[#01c676] focus:ring-2 focus:ring-[#01c676]/20"
     />
   );
 }
 
 function ErrorText({ message }: { message?: string }) {
   if (!message) return null;
-  return (
-    <motion.p
-      initial={{ opacity: 0, y: -5 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="mt-1.5 text-xs font-medium text-red-500"
-    >
-      {message}
-    </motion.p>
-  );
+
+  return <p className="mt-2 text-xs font-medium text-red">{message}</p>;
 }
 
 function CheckboxRow({ children }: { children: React.ReactNode }) {
-  return <div className="flex items-start gap-3">{children}</div>;
+  return <div className="flex items-start gap-3 ">{children}</div>;
 }

@@ -55,7 +55,7 @@ export default function ModalButton({ isOpen, onClose, children }: ModalProps) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.97 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="relative w-full max-w-3xl bg-white max-h-[90vh] overflow-y-auto rounded-lg border border-white/10 bg-[var(--color-bg-surface)] shadow-[var(--shadow-strong)] py-4"
+              className="relative w-full max-w-3xl bg-light max-h-[90vh] overflow-y-auto rounded-lg border border-white/10 bg-[var(--color-bg-surface)] shadow-[var(--shadow-strong)] p-8"
             >
               {/* Close button */}
               <button

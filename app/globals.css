@@ -83,7 +83,7 @@ html {
 }
 
 .bg-red-hover {
-  background-color: var(--color-primary-hover);
+  background-color: var(--color-primary-active);
 }
 /* ── Text utilities ──────────────────────────── */
 .text-white-secondary {
@@ -98,6 +98,7 @@ html {
 .text-red {
   color: var(--color-primary);
 }
+
 .text-gold {
   color: #c9a961;
 }

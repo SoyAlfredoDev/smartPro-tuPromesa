@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import FormNewInmobiliaria from "@/components/admin/FormNewInmobiliaria";
 import InmobiliariasList from "@/components/admin/InmobiliariasList";
+import CasesList from "@/components/admin/CasesList";
 
 type RealEstateCompany = {
   _id: string;
@@ -92,8 +93,9 @@ export default function AdminPage() {
             Gestiona inmobiliarias y logos
           </p>
         </header>
+        <CasesList />
 
-        <section className="grid gap-6 xl:grid-cols-[420px_1fr]">
+        <section className="grid gap-6 xl:grid-cols-[420px_1fr] mt-8">
           {/* FORM */}
           <FormNewInmobiliaria onSubmit={handleCreate} />
 
