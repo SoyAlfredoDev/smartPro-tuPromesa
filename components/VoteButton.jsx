@@ -160,8 +160,20 @@ export default function VoteButton({
                         required
                         className="mt-1 accent-primary"
                       />
-                      Acepto que mi información sea tratada conforme a la
-                      legislación chilena y autorizo el contacto.
+                      <span>
+                        Acepto que mi información sea tratada conforme a la
+                        legislación chilena (Ley N° 21.719) y autorizo el
+                        contacto según la{" "}
+                        <a
+                          href="/politica-privacidad"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium text-primary underline-offset-2 hover:underline"
+                        >
+                          política de privacidad
+                        </a>
+                        .
+                      </span>
                     </label>
 
                     {/* Actions */}
