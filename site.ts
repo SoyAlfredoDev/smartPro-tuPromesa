@@ -1,8 +1,10 @@
 export const siteConfig = {
   name: "Tu Promesa CL",
+  url: "https://tupromesa.cl",
 
   contact: {
-    phone: "+56 9 2214 6788",
+    phone: "+56922146788",
+    phoneDisplay: "+56 9 2214 6788",
     email: "contacto@tupromesa.cl",
     whatsapp: "+56 9 2214 6788",
     whatsappLink: "https://wa.me/56922146788",

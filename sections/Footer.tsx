@@ -251,6 +251,12 @@ export default function Footer() {
               constituye acusación formal. Este sitio actúa como canal de
               visibilización.
             </p>
+            <Link
+              href="/politica-privacidad"
+              className="text-sm font-medium text-[var(--color-primary)] transition-opacity hover:opacity-80"
+            >
+              Política de Privacidad
+            </Link>
           </motion.div>
         </div>
 

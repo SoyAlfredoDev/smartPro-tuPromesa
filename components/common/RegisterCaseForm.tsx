@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import Link from "next/link";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -739,7 +740,14 @@ export default function RegisterCaseForm({
                   </ul>
                   <span className="text-red">
                     Además, acepto los términos y condiciones del servicio y
-                    declaro conocerlos. *
+                    declaro conocer la{" "}
+                    <Link
+                      href="/politica-privacidad"
+                      className="underline underline-offset-2 hover:opacity-80"
+                    >
+                      política de privacidad
+                    </Link>
+                    . *
                   </span>
                 </Label>
                 <ErrorText message={errors.acceptTerms} />
